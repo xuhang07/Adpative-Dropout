@@ -1,0 +1,43 @@
+name: test_Real_SRResNetx4_withdropout
+model_type: SRModel
+scale: 4
+num_gpu: 'auto'  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+# network structures
+network_g:
+  type: MSRResNet_details_dropoutlast_channel07
+  num_in_ch: 3
+  num_out_ch: 3
+  num_feat: 64
+  num_block: 16
+  upscale: 4
+
+# path
+path:
+  pretrain_network_g: ../pretrained_models/scale_all_and_dropout_last2.pth
+  strict_load_g: true
+
+# validation settings
+val:
+  save_img: false
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 4
+      test_y_channel: false
+
+
+datasets:
+
+  test_01:  # the 1st test dataset
+    name: Set5_bicubic
+    type: PairedImageDataset
+    dataroot_gt: ../../dataset/benchmark/Set5/HR/x4
+    dataroot_lq: ../../dataset/benchmark/Set5/LR_degra/bicubic_noise20_jepg50
+    #filename_tmpl: '{}x4'
+    io_backend:
+      type: disk
+
